@@ -1,6 +1,6 @@
 let particles = []
-let sun = []
-let planet = []
+//let sun = []
+//let planet = []
 let center
 
 /*
@@ -12,11 +12,11 @@ let random = (min, max) => {
 function setup() {
     createCanvas(1600, 1200)
 
-    for (let i = 0; i < 500; i++) {
+    for (let i = 50; i >= 0; i--) {
         if (i > 25)
-            particles.push(new particle(random(width), random(height), random(1, 5)))
+            particles.push(new particle(random(width), random(height), random(1, 3)))
         else
-            particles.push(new particle(random(width), random(height), random(6, 12)))
+            particles.push(new particle(random(width), random(height), random(4, 8)))
     }
 
     center = createVector(width/2, height/2)
@@ -50,15 +50,28 @@ drawParticle = particle => {
 updateParticle = particle => {
     particle.pos.add(particle.vel)
 
-    let dif = p5.Vector.sub(center, particle.pos).mult(0.001)
+    //let dif = p5.Vector.sub(center, particle.pos).mult(0.001)
 
-    if (particle.r > 5)
-        particle.vel.add(dif)
+    //if (particle.r > 5)
+    //    particle.vel.add(dif)
 
-    for (let i = 0; i < particles.length; i++) {
+    for (let i = particles.length-1; i >= 0; i--) {
+        if (particles[i] == particle)
+            continue
+            
         let pDif = p5.Vector.sub(particles[i].pos, particle.pos).mult(circleArea(particles[i].r) * 0.0000001)
 
         particle.vel.add(pDif)
+
+        if (particleCollision(particle, particles[i])) {
+            // Collision
+            let ratio =  circleArea(particle.r) / circleArea(particles[i].r)
+
+            particle.r = Math.sqrt( (circleArea(particle.r) + circleArea(particles[i].r)) / Math.PI )
+            particle.vel = p5.Vector.add(particle.vel.mult(ratio), particles[i].vel.mult(1/ratio)).mult(0.001)
+
+            particles.splice(i, 1)
+        }
     }
 
     if (particle.pos.x < 0)
@@ -71,3 +84,8 @@ updateParticle = particle => {
     if (particle.pos.y > height)
         particle.pos.y -= height
 }
+
+particleCollision = (p1, p2) => {
+    let dist = p1.pos.dist(p2.pos)
+    return p1.r + p2.r > dist
+} 
