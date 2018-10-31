@@ -1,5 +1,7 @@
 let particles = []
 
+let center
+
 /*
 let random = (min, max) => {
     return Math.random() * (max - min) + min
@@ -7,15 +9,18 @@ let random = (min, max) => {
 */
 
 function setup() {
-    createCanvas(800, 600)
+    createCanvas(1600, 1200)
 
     for (let i = 0; i < 100; i++) {
         particles.push(new particle(random(width), random(height), random(4, 20)))
     }
+
+    center = createVector(width/2, height/2)
+    background(0)
 }
 
 function draw() {
-    background(0)
+    background(0, 80)
 
     fill(255)
     noStroke()
@@ -29,7 +34,7 @@ function particle(x, y, r) {
     this.pos = createVector(x, y)
     this.r = r
 
-    this.vel = p5.Vector.random2D().mult(0.2)
+    this.vel = p5.Vector.random2D().mult(1)
 }
 
 drawParticle = particle => {
@@ -48,4 +53,8 @@ updateParticle = particle => {
         particle.pos.y += height
     if (particle.pos.y > height)
         particle.pos.y -= height
+
+    let dif = p5.Vector.sub(center, particle.pos).mult(0.001)
+
+    particle.vel.add(dif)
 }
