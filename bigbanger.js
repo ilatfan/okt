@@ -38,4 +38,14 @@ drawParticle = particle => {
 
 updateParticle = particle => {
     particle.pos.add(particle.vel)
+
+    if (particle.pos.x < 0)
+        particle.pos.x += width
+    if (particle.pos.x > width)
+        particle.pos.x -= width
+
+    if (particle.pos.y < 0)
+        particle.pos.y += height
+    if (particle.pos.y > height)
+        particle.pos.y -= height
 }
